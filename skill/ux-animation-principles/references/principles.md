@@ -183,9 +183,9 @@ so the response feels delayed, and it stops abruptly at full speed.
 
 ---
 
-## ux-07 — Moving in arcs
+## ux-07 — Arcs
 
-**What it does.** Moves objects along curved paths instead of straight lines, because
+**What it does.** Moves objects (classically "moving in arcs") along curved paths instead of straight lines, because
 most natural motion (thrown objects, swinging limbs) follows arcs. The path reads as
 intentional and organic.
 
@@ -296,9 +296,9 @@ if every interaction uses it.
 
 ---
 
-## ux-11 — Solid drawing in 3D
+## ux-11 — Solid 3D models
 
-**What it does.** Treats elements as solid objects with volume, a consistent light
+**What it does.** Treats elements (the classic principle is "solid drawing") as solid objects with volume, a consistent light
 source and correct perspective. Flips, tilts and layered depth then look believable
 instead of flat.
 

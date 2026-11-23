@@ -22,11 +22,11 @@ only three apply.
 | ux-04 | Pose to pose | Motion |
 | ux-05 | Follow through | Motion |
 | ux-06 | Ease in & ease out | Motion |
-| ux-07 | Moving in arcs | Motion |
+| ux-07 | Arcs | Motion |
 | ux-08 | Secondary action | Motion |
 | ux-09 | Snappy timing | Motion |
 | ux-10 | Exaggerated feedback | Motion |
-| ux-11 | Solid drawing in 3D | Motion |
+| ux-11 | Solid 3D models | Motion |
 | ux-12 | Overall appeal | Motion |
 | ux-13 | Fitts's law | UX law |
 | ux-14 | Bigger hit areas | UX law |

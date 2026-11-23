@@ -544,7 +544,7 @@
     return lab;
   });
 
-  /* ux-07 Moving in arcs */
+  /* ux-07 Arcs */
   register('ux-07', function (host, ctx) {
     function pts(W, H) { return { x0: 36, y0: H - 30, x1: W - 36, y1: 34 }; }
     function d(kind, p, W, H) {
@@ -680,7 +680,7 @@
     });
   });
 
-  /* ux-11 Solid drawing in 3D */
+  /* ux-11 Solid 3D models */
   register('ux-11', function (host, ctx) {
     function html(kind) {
       return function (p) {
