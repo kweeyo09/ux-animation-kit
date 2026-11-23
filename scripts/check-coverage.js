@@ -20,7 +20,7 @@ const SKILL = path.join(ROOT, 'skill', 'ux-animation-principles');
 
 const EXPECTED = [
   'Squash & stretch', 'Anticipation wind-up', 'Staging the focus', 'Pose to pose', 'Follow through',
-  'Slow in & slow out', 'Moving in arcs', 'Secondary action', 'Snappy timing', 'Exaggerated feedback',
+  'Ease in & ease out', 'Moving in arcs', 'Secondary action', 'Snappy timing', 'Exaggerated feedback',
   'Solid drawing in 3D', 'Overall appeal', "Fitts's law", 'Bigger hit areas', "Hick's law",
   "Miller's law", 'Doherty threshold', "Postel's law", "Jakob's law", 'Frequency of use'
 ];

@@ -151,9 +151,9 @@ arrives after 700ms or more, and the user waits for decoration. Cap the stagger
 
 ---
 
-## ux-06 — Slow in & slow out
+## ux-06 — Ease in & ease out
 
-**What it does.** Objects accelerate from rest and decelerate into rest (easing)
+**What it does.** Objects accelerate from rest and decelerate into rest (easing; the classic animation term is "slow in & slow out")
 instead of moving at constant speed. Linear motion looks robotic. Eased motion looks
 natural and is easier to track.
 

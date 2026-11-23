@@ -504,7 +504,7 @@
     });
   });
 
-  /* ux-06 Slow in & slow out */
+  /* ux-06 Ease in & ease out */
   register('ux-06', function (host, ctx) {
     var DUR = 1300;
     function laneHtml(key) {

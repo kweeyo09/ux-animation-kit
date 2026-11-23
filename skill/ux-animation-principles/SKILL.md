@@ -21,7 +21,7 @@ only three apply.
 | ux-03 | Staging the focus | Motion |
 | ux-04 | Pose to pose | Motion |
 | ux-05 | Follow through | Motion |
-| ux-06 | Slow in & slow out | Motion |
+| ux-06 | Ease in & ease out | Motion |
 | ux-07 | Moving in arcs | Motion |
 | ux-08 | Secondary action | Motion |
 | ux-09 | Snappy timing | Motion |

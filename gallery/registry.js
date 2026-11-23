@@ -21,7 +21,7 @@
     { id: 'ux-05', num: 5, title: 'Follow through', family: 'motion',
       summary: 'When the container stops, its contents carry on a little and settle, at slightly staggered times (overlapping action).',
       notice: 'On the left the drawer and its lines stop dead together. On the right the lines arrive after the drawer, overshoot slightly and settle.' },
-    { id: 'ux-06', num: 6, title: 'Slow in & slow out', family: 'motion',
+    { id: 'ux-06', num: 6, title: 'Ease in & ease out', family: 'motion',
       summary: 'Accelerate out of rest and decelerate into rest. Easing makes motion feel physical and easy to track.',
       notice: 'The dots under each track mark equal slices of time. Linear spaces them evenly. Easing bunches them at the ends, because the box is slow there.' },
     { id: 'ux-07', num: 7, title: 'Moving in arcs', family: 'motion',
