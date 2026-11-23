@@ -7,7 +7,8 @@ Two deliverables built from one shared list of 20 principles (`ux-01` to `ux-20`
    layout decisions, and verify the result, including accessibility, reduced motion and
    performance.
 2. **`gallery/`** is a self-contained, dependency-free web app with one interactive demo per
-   principle.
+   principle. Live at **https://kweeyo09.github.io/ux-animation-kit/**. It redeploys on every
+   push to `main`, after the coverage check passes (`.github/workflows/pages.yml`).
 
 ```
 ux-animation-kit/
