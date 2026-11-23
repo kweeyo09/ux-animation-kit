@@ -1,0 +1,16 @@
+{
+  "name": "ux-animation-kit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Claude Skill + interactive gallery for 20 UX and animation principles",
+  "scripts": {
+    "start": "node scripts/serve.js",
+    "check": "node scripts/check-coverage.js",
+    "test:browser": "node scripts/smoke-test.js",
+    "package": "node scripts/package.js",
+    "build": "node scripts/check-coverage.js && node scripts/package.js"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}

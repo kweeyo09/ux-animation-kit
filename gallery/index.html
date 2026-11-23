@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-reduced="false">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UX &amp; Animation Principles: 20 interactive demos</title>
+  <meta name="description" content="Twenty interactive demos: twelve animation principles adapted to UI and eight UX laws.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to demos</a>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand">
+        <h1>UX &amp; Animation Principles</h1>
+        <span class="coverage" id="coverage" role="status" aria-live="polite">0/20 demos</span>
+      </div>
+      <div class="toolbar">
+        <div role="group" aria-labelledby="motion-label" style="display:inline-flex;align-items:center">
+          <span class="seg-label" id="motion-label">Motion</span>
+          <div class="seg" id="motion-pref">
+            <button type="button" data-v="system" aria-pressed="true">System</button>
+            <button type="button" data-v="reduce" aria-pressed="false">Reduce</button>
+            <button type="button" data-v="full" aria-pressed="false">Full</button>
+          </div>
+        </div>
+        <div role="group" aria-labelledby="filter-label" style="display:inline-flex;align-items:center">
+          <span class="seg-label" id="filter-label">Show</span>
+          <div class="seg" id="filter">
+            <button type="button" data-v="all" aria-pressed="true">All 20</button>
+            <button type="button" data-v="motion" aria-pressed="false">Animation 1–12</button>
+            <button type="button" data-v="ux" aria-pressed="false">UX laws 13–20</button>
+          </div>
+        </div>
+        <label class="jump ctl" for="jump"><span>Jump to</span><select id="jump"></select></label>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <div class="intro">
+      <p>Each card is a standalone demo with a stable ID (<code>ux-01</code> to <code>ux-20</code>). Motion demos have Replay, a timeline scrubber with step-through, speed control and a static-frames view. UX-law demos are interactive before/after comparisons.</p>
+      <p>Keyboard: <kbd>Tab</kbd> through controls, <kbd>n</kbd> / <kbd>p</kbd> for the next or previous demo. With reduced motion (system setting or the “Reduce” button), motion demos open on static frames.</p>
+    </div>
+    <nav class="toc" aria-label="Demos">
+      <h2 id="toc-motion">Animation principles</h2>
+      <ol id="toc-list-motion" aria-labelledby="toc-motion"></ol>
+      <h2 id="toc-ux">UX laws</h2>
+      <ol id="toc-list-ux" aria-labelledby="toc-ux" start="13"></ol>
+    </nav>
+    <main id="main" class="cards" tabindex="-1">
+      <noscript><p>This gallery needs JavaScript to run the demos.</p></noscript>
+    </main>
+  </div>
+
+  <script src="registry.js"></script>
+  <script src="demos.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
