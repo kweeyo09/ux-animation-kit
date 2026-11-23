@@ -324,11 +324,12 @@ collapses to a line and the back face mirrors the text. Very short perspective v
 
 ---
 
-## ux-12 — Overall appeal
+## ux-12 — Consistency
 
-**What it does.** The combined, coherent quality of motion and visual design that makes
-an interface pleasant and trustworthy. Consistent timing, a shared easing vocabulary,
-clean shapes and restraint add up to a recognisable "feel".
+**What it does.** Uses one shared set of timings, easings, shapes and behaviours across
+the whole product. The interface then reads as one thing, feels trustworthy, and moves
+in ways people can predict. (The classic animation principle is "appeal"; in UI it
+comes mostly from consistency.)
 
 **When to use.** As a review lens over the whole system, especially when individual
 animations are fine but the product still feels inconsistent or cheap.
@@ -342,9 +343,10 @@ animations are fine but the product still feels inconsistent or cheap.
 Audit screens side by side for mismatched durations, competing easings and decorative
 motion with no purpose.
 
-**Common pitfall.** Treating appeal as "add more polish". Appeal usually comes from
-removing things: inconsistent one-off animations, gratuitous bounces, mixed visual
-styles.
+**Common pitfall.** Fixing inconsistency by adding polish. Consistency usually comes
+from removing things: one-off animations, gratuitous bounces, mixed visual styles. The
+opposite mistake is locking the tokens so tightly that a moment which should stand out
+(an error, a celebration) can't.
 
 ---
 

@@ -27,7 +27,7 @@ only three apply.
 | ux-09 | Snappy timing | Motion |
 | ux-10 | Exaggerated feedback | Motion |
 | ux-11 | Solid 3D models | Motion |
-| ux-12 | Overall appeal | Motion |
+| ux-12 | Consistency | Motion |
 | ux-13 | Fitts's law | UX law |
 | ux-14 | Bigger hit areas | UX law |
 | ux-15 | Hick's law | UX law |
@@ -159,7 +159,7 @@ For a quick question: answer in a few lines and cite the ux-ID.
 
 - Motion must serve a purpose: orientation, feedback, focus, continuity or
   personality. If you cannot name the purpose, remove the motion.
-- Personality principles (ux-01, ux-08, ux-10, ux-12) scale with brand tone. Turn
+- Personality principles (ux-01, ux-08, ux-10) scale with brand tone. Turn
   them down for serious, high-stakes or high-frequency contexts.
 - UX laws are heuristics with empirical backing, not physics. State them as
   trade-offs, and prefer testing with users over citing a law.

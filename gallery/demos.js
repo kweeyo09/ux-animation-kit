@@ -710,7 +710,7 @@
     });
   });
 
-  /* ux-12 Overall appeal */
+  /* ux-12 Consistency */
   register('ux-12', function (host, ctx) {
     var texts = ['Payment received', 'New follower: Sam', 'Backup complete'];
     function html(kind) { return '<div class="' + kind + '" style="position:absolute;inset:0">' + texts.map(function (t) { return '<div class="note"><b></b>' + t + '</div>'; }).join('') + '</div>'; }
