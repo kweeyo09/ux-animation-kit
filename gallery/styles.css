@@ -1,12 +1,13 @@
 /* UX & Animation Principles — gallery styles (no external assets) */
 :root {
-  --bg: #f6f5f2;
-  --surface: #ffffff;
-  --surface-2: #efede8;
-  --stage: #f3f1ec;
-  --ink: #1d1c1a;
-  --ink-2: #5b5852;
-  --line: #dcd8cf;
+  --bg: #f1eadc;          /* beige */
+  --surface: #fffdf8;
+  --surface-2: #f6f0e4;
+  --stage: #f9f5ec;
+  --ink: #1f1b16;
+  --ink-2: #6a6155;
+  --line: #e2d8c6;
+  --grid: #ece4d4;
   --accent: #4f46e5;
   --accent-ink: #ffffff;
   --accent-soft: #e6e4fb;
@@ -20,17 +21,7 @@
   --focus: 0 0 0 3px var(--surface), 0 0 0 6px var(--accent);
   --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  color-scheme: light dark;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #141416; --surface: #1d1d21; --surface-2: #26262b; --stage: #18181c;
-    --ink: #f1efe9; --ink-2: #a9a6a0; --line: #34343a;
-    --accent: #8b85ff; --accent-ink: #111; --accent-soft: #2b2a4a;
-    --good: #4ade80; --bad: #ff7a6b; --warn: #f3b453;
-    --actor: #ff7a45; --actor-2: #60a5fa;
-    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.25);
-  }
+  color-scheme: light;
 }
 
 * { box-sizing: border-box; }
@@ -70,8 +61,6 @@ button, input, select { font: inherit; color: inherit; }
 .toc a:hover { background: var(--surface-2); }
 .toc a[aria-current="true"] { background: var(--accent-soft); }
 .toc .n { font: 12px var(--mono); color: var(--ink-2); min-width: 20px; padding-top: 2px; }
-.intro { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px 24px; color: var(--ink-2); font-size: 14px; }
-.intro p { margin: 0; max-width: 80ch; }
 kbd { font: 12px var(--mono); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; background: var(--surface); }
 
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 560px), 1fr)); gap: 20px; align-content: start; }
@@ -87,7 +76,6 @@ kbd { font: 12px var(--mono); border: 1px solid var(--line); border-bottom-width
 .tag { margin-left: auto; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-2); border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
 .card-id { font: 11px var(--mono); color: var(--ink-2); }
 .summary { margin: 0; color: var(--ink); }
-.notice { margin: 0; font-size: 14px; background: var(--surface-2); border-left: 3px solid var(--accent); padding: 8px 10px; border-radius: 0 8px 8px 0; }
 .label-note { margin: 0; font-size: 13px; color: var(--warn); border: 1px dashed currentColor; padding: 6px 10px; border-radius: 8px; }
 .demo-error { color: var(--bad); font-family: var(--mono); font-size: 13px; }
 
@@ -118,9 +106,8 @@ select { border: 1px solid var(--line); background: var(--surface); border-radiu
 .pill { font-size: 10px; text-transform: uppercase; letter-spacing: .06em; padding: 1px 6px; border-radius: 999px; border: 1px solid var(--line); }
 .pill.with { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .stage { position: relative; height: var(--h, 160px); background: var(--stage); border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
-  background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
   background-size: 20px 20px; background-position: -1px -1px; }
-@media (prefers-color-scheme: light) { .stage { background-image: linear-gradient(#e6e2d9 1px, transparent 1px), linear-gradient(90deg, #e6e2d9 1px, transparent 1px); } }
 .frames { display: grid; gap: 10px; }
 .frames-lane { display: flex; flex-direction: column; gap: 4px; }
 .frames-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--fw, 96px), 1fr)); gap: 6px; }
@@ -296,3 +283,11 @@ select { border: 1px solid var(--line); background: var(--surface); border-radiu
   .card { padding: 14px; }
   input[type="range"] { width: 100px; }
 }
+
+/* ---------- Record view (record.html): just the 20 boxes on beige ---------- */
+body.record { background: var(--bg); }
+.record-grid { max-width: 1680px; margin: 0 auto; padding: 32px; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); gap: 24px; align-content: start; }
+.record .card { box-shadow: 0 1px 2px rgba(60,40,10,.05), 0 8px 24px rgba(60,40,10,.06); }
+.record .card .tag, .record .card .card-id, .record .card .summary, .record .card .label-note,
+.record .lab > .controls, .record .lab > .readout, .record .demo > .controls, .record .demo > .readout,
+.record .frame-note, .record #ux-13 .trials, .record #ux-13 .plot { display: none !important; }

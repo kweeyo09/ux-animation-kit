@@ -43,7 +43,6 @@ EXPECTED_IDS.forEach((id, i) => {
   check(e.title === EXPECTED[i], `${id} title is "${EXPECTED[i]}" (found "${e.title}")`);
   check(e.num === i + 1, `${id} num is ${i + 1}`);
   check(typeof e.summary === 'string' && e.summary.length > 20, `${id} has a short explanation`);
-  check(typeof e.notice === 'string' && e.notice.length > 20, `${id} has a "what to notice" cue`);
   check(e.family === (i < 12 ? 'motion' : 'ux'), `${id} family is ${i < 12 ? 'motion' : 'ux'}`);
 });
 check(new Set(REG.map(e => e.title)).size === REG.length, 'registry titles are unique');

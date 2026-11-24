@@ -5,11 +5,13 @@
   var REG = window.UX_REGISTRY || [];
   var DEMOS = window.UX_DEMOS || {};
   var root = document.documentElement;
+  var RECORD = document.body.classList.contains('record'); // record.html: just the 20 boxes, motion looping
   var mq = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false, addEventListener: function () {} };
 
   /* ---------- motion preference ---------- */
   var pref = 'system';
   try { pref = localStorage.getItem('ux-motion-pref') || 'system'; } catch (e) { /* storage unavailable */ }
+  if (RECORD) pref = 'full'; // capture view: always animate
   var listeners = [];
   function reduced() { return pref === 'reduce' || (pref === 'system' && mq.matches); }
   function applyMotion() {
@@ -38,7 +40,7 @@
 
   var lastFamily = null;
   REG.forEach(function (e) {
-    if (e.family !== lastFamily) {
+    if (!RECORD && e.family !== lastFamily) {
       var gt = document.createElement('h2');
       gt.className = 'group-title'; gt.dataset.family = e.family;
       gt.textContent = e.family === 'motion' ? 'Animation principles · 1–12' : 'UX laws · 13–20';
@@ -56,15 +58,15 @@
       '<span class="tag">' + (e.family === 'motion' ? 'Motion' : 'UX law') + '</span></div>' +
       '<span class="card-id">' + e.id + '</span>' +
       '<p class="summary">' + esc(e.summary) + '</p>' +
-      '<p class="notice"><strong>What to notice:</strong> ' + esc(e.notice) + '</p>' +
       (e.labelNote ? '<p class="label-note"><strong>Label unverified:</strong> ' + esc(e.labelNote) + '</p>' : '') +
       '<div class="demo" data-demo="' + e.id + '"></div>';
     main.appendChild(card);
 
     var li = document.createElement('li');
     li.innerHTML = '<a href="#' + e.id + '" data-id="' + e.id + '"><span class="n">' + pad(e.num) + '</span>' + esc(e.title) + '</a>';
-    document.getElementById(e.family === 'motion' ? 'toc-list-motion' : 'toc-list-ux').appendChild(li);
-    var op = document.createElement('option'); op.value = e.id; op.textContent = pad(e.num) + ' · ' + e.title; jump.appendChild(op);
+    var tocList = document.getElementById(e.family === 'motion' ? 'toc-list-motion' : 'toc-list-ux');
+    if (tocList) tocList.appendChild(li);
+    if (jump) { var op = document.createElement('option'); op.value = e.id; op.textContent = pad(e.num) + ' · ' + e.title; jump.appendChild(op); }
   });
 
   /* mount each demo in isolation, so one failure cannot take down the others */
@@ -90,7 +92,7 @@
   /* ---------- coverage ---------- */
   var unique = REG.filter(function (e) { return document.querySelectorAll('[id="' + e.id + '"]').length === 1; }).map(function (e) { return e.id; });
   var ok = mounted.filter(function (id) { return unique.indexOf(id) !== -1; });
-  var cov = document.getElementById('coverage');
+  var cov = document.getElementById('coverage') || document.createElement('span');
   cov.textContent = ok.length + '/' + REG.length + ' demos';
   cov.dataset.ok = String(ok.length === REG.length && REG.length === 20);
   cov.title = ok.length === REG.length ? 'Every registry ID mounted exactly one demo' : 'Missing: ' + REG.filter(function (e) { return ok.indexOf(e.id) === -1; }).map(function (e) { return e.id; }).join(', ');
@@ -116,7 +118,7 @@
     document.getElementById(id + '-title').focus({ preventScroll: true });
     history.replaceState(null, '', '#' + id);
   }
-  jump.addEventListener('change', function () { goTo(jump.value); });
+  if (jump) jump.addEventListener('change', function () { goTo(jump.value); });
   document.querySelectorAll('.toc a').forEach(function (a) {
     a.addEventListener('click', function (ev) { ev.preventDefault(); goTo(a.dataset.id); });
   });
@@ -145,13 +147,14 @@
         var id = en.target.id;
         if (apis[id] && apis[id].autoplay) apis[id].autoplay();
         document.querySelectorAll('.toc a').forEach(function (a) { a.setAttribute('aria-current', String(a.dataset.id === id)); });
-        jump.value = id;
+        if (jump) jump.value = id;
       });
     }, { threshold: 0.6 });
     document.querySelectorAll('.card').forEach(function (c) { io.observe(c); });
   }
 
   applyMotion();
+  if (RECORD) Object.keys(apis).forEach(function (id) { if (apis[id].loop) apis[id].loop(); });
   if (location.hash && document.getElementById(location.hash.slice(1))) {
     setTimeout(function () { goTo(location.hash.slice(1)); }, 0);
   }

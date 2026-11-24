@@ -79,7 +79,9 @@
     (opts.params || []).forEach(function (p) { params[p.key] = p.value; });
     var H = opts.height || 160;
     var nFrames = opts.frames || 6;
-    var speed = 1, mode = ctx.reduced ? 'frames' : 'live', userChoseMode = false, hasPlayed = false, raf = 0;
+    var FPS = 60;
+    function fr(ms) { return Math.round(ms * FPS / 1000); }
+    var speed = 1, mode = ctx.reduced ? 'frames' : 'live', userChoseMode = false, hasPlayed = false, raf = 0, looping = false, loopTimer = 0;
 
     var wrap = el('<div class="lab"></div>');
     var lanesEl = el('<div class="lanes ' + (opts.layout || 'rows') + '" style="--n:' + opts.lanes.length + '"></div>');
@@ -134,6 +136,7 @@
         allAnims().forEach(function (a) { if ((a.currentTime || 0) > t) t = a.currentTime; if (a.playState === 'running') running = true; });
         updateScrub(t / T);
         if (running) raf = requestAnimationFrame(loop);
+        else if (looping) { clearTimeout(loopTimer); loopTimer = setTimeout(play, 900); }
       })();
     }
     function seek(p) {
@@ -149,7 +152,7 @@
     var scrubId = nid('scrub');
     var scrubWrap = el('<span class="scrub"><button type="button" class="btn small" aria-label="Previous step">&#9664;</button><label class="visually-hidden" for="' + scrubId + '">Timeline position</label><input type="range" id="' + scrubId + '" min="0" max="1000" value="0"><button type="button" class="btn small" aria-label="Next step">&#9654;</button></span>');
     var scrub = $(scrubWrap, 'input');
-    var stepLabel = el('<span class="step-label"></span>');
+    var stepLabel = el('<span class="step-label" title="Frames at 60fps"></span>');
     var speedCtl = control({ type: 'select', label: 'Speed', value: '1', options: [{ value: '1', label: '1×' }, { value: '0.5', label: '0.5×' }, { value: '0.25', label: '0.25×' }] }, function (v) {
       speed = Number(v); allAnims().forEach(function (a) { a.playbackRate = speed; });
     });
@@ -160,8 +163,8 @@
       p = Math.max(0, Math.min(1, p));
       scrub.value = String(Math.round(p * 1000));
       var T = total();
-      stepLabel.textContent = Math.round(p * T) + ' / ' + Math.round(T) + 'ms';
-      scrub.setAttribute('aria-valuetext', Math.round(p * T) + ' of ' + Math.round(T) + ' milliseconds');
+      stepLabel.textContent = fr(p * T) + ' / ' + fr(T) + 'f';
+      scrub.setAttribute('aria-valuetext', 'frame ' + fr(p * T) + ' of ' + fr(T) + ', at 60 frames per second');
     }
     playBtn.addEventListener('click', play);
     scrub.addEventListener('input', function () { seek(Number(scrub.value) / 1000); });
@@ -203,7 +206,7 @@
         var W = laneWidth(L);
         if (opts.frameStyle === 'onion') {
           var ob = el('<div class="frames-lane"><h3>' + caption(L) + '</h3><div class="stage onion" style="--h:' + H + 'px" aria-hidden="true"></div>' +
-            '<p class="frame-note">Onion skin: ' + nFrames + ' frames from 0 to ' + Math.round(T) + 'ms, every ' + Math.round(T / (nFrames - 1)) + 'ms. Faint = early, solid = last.</p></div>');
+            '<p class="frame-note">Onion skin: ' + nFrames + ' samples from 0f to ' + fr(T) + 'f at 60fps. Faint = early, solid = last.</p></div>');
           var st = $(ob, '.stage');
           framesEl.append(ob);
           var w2 = st.clientWidth || W;
@@ -221,7 +224,7 @@
         var row = $(box, '.frames-row');
         framesEl.append(box);
         times.forEach(function (t, i) {
-          var fig = el('<figure class="frame"><div class="frame-box" aria-hidden="true"></div><figcaption>' + (i + 1) + ' · ' + Math.round(t) + 'ms</figcaption></figure>');
+          var fig = el('<figure class="frame"><div class="frame-box" aria-hidden="true"></div><figcaption>' + (i + 1) + ' · ' + fr(t) + 'f</figcaption></figure>');
           var fb = $(fig, '.frame-box');
           var clone = document.createElement('div');
           clone.className = 'stage';
@@ -252,6 +255,7 @@
     var api = {
       play: play, seek: seek, rebuild: rebuild, params: params, readout: readout,
       autoplay: function () { if (!ctx.reduced && mode === 'live' && !hasPlayed) play(); },
+      loop: function () { looping = true; if (mode !== 'live') setMode('live'); play(); },
       setMode: setMode
     };
 
@@ -299,7 +303,7 @@
     var ballHtml = '<div class="floor"></div><div class="bw" style="position:absolute;left:calc(50% - 17px);top:8px;width:34px;height:34px"><div class="ball" style="left:0;top:0"></div></div>';
     var DUR = 1500;
     function drop(H) { return H - 12 - 34 - 8; }
-    motionLab(host, ctx, {
+    return motionLab(host, ctx, {
       layout: 'cols', height: 200, frames: 8,
       params: [{ key: 'k', label: 'Squash amount', min: 0, max: 50, value: 30, unit: '%' }],
       lanes: [
@@ -361,7 +365,7 @@
       return '<div class="ghost" style="right:12px;top:' + (H / 2 - 30) + 'px;width:70px;height:60px"><span>Sent</span></div>' +
         '<div class="chip" style="left:16px;top:' + (H / 2 - 18) + 'px;width:120px;text-align:center">&#9993; Message</div>';
     };
-    motionLab(host, ctx, {
+    return motionLab(host, ctx, {
       layout: 'rows', height: 110, frames: 7, widthDependent: true, frameStyle: 'onion',
       params: [{ key: 'w', label: 'Wind-up distance', min: 0, max: 40, value: 24, unit: 'px' }],
       lanes: [
@@ -391,7 +395,7 @@
   /* ux-03 Staging the focus */
   register('ux-03', function (host, ctx) {
     var html = '<div class="dash">' + '<div class="tile"><i></i></div>'.repeat(6) + '</div><div class="scrim"></div><div class="toast"><b></b>New message from Ana</div>';
-    motionLab(host, ctx, {
+    return motionLab(host, ctx, {
       layout: 'cols', height: 190, frames: 6,
       lanes: [
         { label: 'Everything moves at once', html: html, alt: 'Dashboard tiles pulse and badges bounce while a message appears among them.',
@@ -478,7 +482,7 @@
   register('ux-05', function (host, ctx) {
     var html = '<div class="drawer"><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>';
     function drawer(s) { return $(s, '.drawer').animate([{ transform: 'translateX(-110%)' }, { transform: 'translateX(0)' }], { duration: 600, easing: 'cubic-bezier(.2,0,0,1)', fill: 'both' }); }
-    motionLab(host, ctx, {
+    return motionLab(host, ctx, {
       layout: 'rows', height: 150, frames: 7,
       params: [
         { key: 'o', label: 'Overshoot', min: 0, max: 16, value: 8, unit: 'px' },
@@ -570,7 +574,7 @@
         $(s, '.cart').animate([{ transform: 'scale(1)' }, { transform: 'scale(1.18)' }, { transform: 'scale(1)' }], { duration: 260, delay: 880, easing: 'ease-out', fill: 'both' })
       ];
     }
-    motionLab(host, ctx, {
+    return motionLab(host, ctx, {
       layout: 'rows', height: 170, frames: 9, widthDependent: true, frameStyle: 'onion',
       params: [{ key: 'arc', label: 'Arc bulge', min: 0, max: 60, value: 40, unit: 'px' }],
       lanes: [
@@ -598,7 +602,7 @@
       if (pop) a.push($(s, '.heart').animate([{ transform: 'scale(1)' }, { transform: 'scale(1.38)', offset: 0.4 }, { transform: 'scale(.94)', offset: 0.75 }, { transform: 'scale(1)' }], { duration: 340, delay: T0, easing: 'ease-out', fill: 'both' }));
       return a;
     }
-    motionLab(host, ctx, {
+    return motionLab(host, ctx, {
       layout: 'cols', height: 150, frames: 6,
       lanes: [
         { label: 'Primary only: fill + number swap', interactive: true, html: html('without secondary action'),
@@ -639,7 +643,7 @@
       ], { duration: total, fill: 'both' })];
     }
     function feel(ms) { return ms <= 100 ? 'instant' : ms <= 300 ? 'snappy' : ms <= 500 ? 'noticeable' : 'sluggish'; }
-    motionLab(host, ctx, {
+    return motionLab(host, ctx, {
       layout: 'cols', height: 170, frames: 6,
       params: [{ key: 'd', label: 'Snappy duration', min: 60, max: 800, step: 10, value: 160, unit: 'ms' }],
       lanes: [
@@ -658,7 +662,7 @@
   register('ux-10', function (host, ctx) {
     var html = '<div class="pw"><div class="field"><span>&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span><span class="err-icon" style="margin-left:auto;opacity:0">!</span></div><div class="err"><span class="err-icon">!</span>Incorrect password. Try again or reset it.</div></div>';
     var T0 = 200;
-    motionLab(host, ctx, {
+    return motionLab(host, ctx, {
       layout: 'rows', height: 96, frames: 7,
       params: [{ key: 'amp', label: 'Shake amplitude', min: 0, max: 18, value: 10, unit: 'px' }],
       lanes: [
@@ -687,7 +691,7 @@
         return '<div class="shadow"></div><div class="scene ' + kind + '" style="perspective:' + p.persp + 'px"><div class="flip"><div class="face front">A&#9824;</div><div class="face back">Back</div></div></div>';
       };
     }
-    motionLab(host, ctx, {
+    return motionLab(host, ctx, {
       layout: 'cols', height: 180, frames: 7,
       params: [{ key: 'persp', label: 'Perspective', min: 200, max: 1600, step: 50, value: 600, unit: 'px' }],
       lanes: [
@@ -714,7 +718,7 @@
   register('ux-12', function (host, ctx) {
     var texts = ['Payment received', 'New follower: Sam', 'Backup complete'];
     function html(kind) { return '<div class="' + kind + '" style="position:absolute;inset:0">' + texts.map(function (t) { return '<div class="note"><b></b>' + t + '</div>'; }).join('') + '</div>'; }
-    motionLab(host, ctx, {
+    return motionLab(host, ctx, {
       layout: 'cols', height: 165, frames: 7,
       lanes: [
         { label: 'Mixed timing, easing and style', html: html('before'), alt: 'Three notifications enter with different speeds, bounces and visual styles.',

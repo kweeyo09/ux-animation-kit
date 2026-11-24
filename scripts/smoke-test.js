@@ -49,7 +49,6 @@ async function launch() {
     ok(title === e.title, `${e.id} heading is "${e.title}" (got "${title}")`);
     ok(await page.locator(`#${e.id} .demo > *`).count() > 0, `${e.id} demo rendered content`);
     ok(await page.locator(`#${e.id} .demo-error`).count() === 0, `${e.id} has no mount error`);
-    ok((await page.textContent(`#${e.id} .notice`)).includes('What to notice'), `${e.id} has a what-to-notice cue`);
   }
 
   /* motion demos: replay advances the timeline; frames view renders */
@@ -65,13 +64,17 @@ async function launch() {
   for (const e of REG.filter(r => r.family === 'motion')) {
     await page.locator(`#${e.id} .scrub input`).fill('500');
     const lbl = await page.textContent(`#${e.id} .step-label`);
-    ok(/^\d+ \/ \d+ms$/.test(lbl.trim()) && !lbl.startsWith('0 /'), `${e.id} scrubber seeks (${lbl.trim()})`);
+    ok(/^\d+ \/ \d+f$/.test(lbl.trim()) && !lbl.startsWith('0 /'), `${e.id} scrubber seeks (${lbl.trim()})`);
     await page.locator(`#${e.id} button[aria-label="Next step"]`).click();
     await page.locator(`#${e.id} button:has-text("Static frames")`).click();
     const frames = await page.locator(`#${e.id} .frames:not([hidden]) :is(.frame, .onion-layer)`).count();
     ok(frames >= 10, `${e.id} static frames view shows ${frames} frames`);
     await page.locator(`#${e.id} button:has-text("Static frames")`).click();
   }
+
+  /* every motion demo hands the gallery a controller (needed for autoplay and the record loop) */
+  const ctrl = await page.evaluate(() => document.querySelectorAll('.lab').length);
+  ok(ctrl >= 12, `motion labs rendered (${ctrl})`);
 
   /* ux-13 Fitts */
   await page.click('#ux-13 button:has-text("small")');
@@ -215,6 +218,29 @@ async function launch() {
   ok(await mp.locator('#jump').isVisible(), 'mobile: jump-to menu replaces the sidebar');
   await mp.screenshot({ path: path.join(SHOTS, 'mobile-top.png') });
   await mp.locator('#ux-14').screenshot({ path: path.join(SHOTS, 'mobile-ux-14.png') });
+
+  /* record view: just the 20 boxes on beige, motion looping */
+  const rec = await (await browser.newContext({ viewport: { width: 1600, height: 1000 } })).newPage();
+  rec.on('pageerror', e => errors.push('record pageerror: ' + e.message));
+  await rec.goto('file://' + path.join(ROOT, 'gallery', 'record.html'));
+  await rec.waitForTimeout(500);
+  ok(await rec.locator('.card').count() === 20, 'record: 20 boxes');
+  ok(await rec.evaluate(() => getComputedStyle(document.body).backgroundColor) === 'rgb(241, 234, 220)', 'record: beige background');
+  const visibleText = await rec.evaluate(() => Array.from(document.querySelectorAll('.summary, .card-id, .tag, .label-note, .group-title, header, nav, .lab > .controls, .demo > .controls, .demo > .readout, .lab > .readout')).filter(e => e.offsetParent !== null).length);
+  ok(visibleText === 0, `record: no descriptive text, chrome or control bars visible (${visibleText})`);
+  const loopA = await rec.locator('#ux-01 .scrub input').inputValue();
+  await rec.waitForTimeout(2600);
+  const loopB = await rec.locator('#ux-01 .scrub input').inputValue();
+  await rec.waitForTimeout(700);
+  const loopC = await rec.locator('#ux-01 .scrub input').inputValue();
+  ok(new Set([loopA, loopB, loopC]).size > 1, `record: motion demos loop (${loopA}, ${loopB}, ${loopC})`);
+  const moving = new Set();
+  for (let k = 0; k < 4; k++) {
+    (await rec.evaluate(() => Array.from(document.querySelectorAll('.card')).filter(c => { const i = c.querySelector('.scrub input'); return i && Number(i.value) > 0; }).map(c => c.id))).forEach(id => moving.add(id));
+    await rec.waitForTimeout(500);
+  }
+  ok(moving.size === 12, `record: all 12 motion demos are playing (${moving.size})`);
+  await rec.screenshot({ path: path.join(SHOTS, 'record-view.png') });
 
   ok(errors.length === 0, `no page or console errors (${errors.length}${errors.length ? ': ' + errors.slice(0, 3).join(' | ') : ''})`);
   await browser.close();
