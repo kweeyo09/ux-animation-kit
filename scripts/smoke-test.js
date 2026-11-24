@@ -254,11 +254,13 @@ async function launch() {
   await mp.locator('#ux-14').screenshot({ path: path.join(SHOTS, 'mobile-ux-14.png') });
 
   /* record view: just the 20 boxes on beige, motion looping */
-  const rec = await (await browser.newContext({ viewport: { width: 1600, height: 1000 } })).newPage();
+  const rec = await (await browser.newContext({ viewport: { width: 1920, height: 1080 } })).newPage();
   rec.on('pageerror', e => errors.push('record pageerror: ' + e.message));
   await rec.goto('file://' + path.join(ROOT, 'gallery', 'record.html'));
   await rec.waitForTimeout(500);
   ok(await rec.locator('.card').count() === 20, 'record: 20 boxes');
+  const fit = await rec.evaluate(() => ({ inView: Array.from(document.querySelectorAll('.card')).filter(c => { const r = c.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight && r.right <= innerWidth; }).length, scroll: document.documentElement.scrollHeight - innerHeight }));
+  ok(fit.inView === 20 && fit.scroll <= 1, `record: all 20 boxes fit one 1920×1080 screen at 50% (${fit.inView} in view, ${fit.scroll}px extra scroll)`);
   ok(await rec.evaluate(() => getComputedStyle(document.body).backgroundColor) === 'rgb(241, 234, 220)', 'record: beige background');
   const visibleText = await rec.evaluate(() => Array.from(document.querySelectorAll('.summary, .card-id, .tag, .label-note, .group-title, header, nav, .lab > .controls, .demo > .controls, .demo > .readout, .lab > .readout')).filter(e => e.offsetParent !== null).length);
   ok(visibleText === 0, `record: no descriptive text, chrome or control bars visible (${visibleText})`);

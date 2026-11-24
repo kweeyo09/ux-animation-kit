@@ -173,6 +173,35 @@
 
   applyMotion();
   if (RECORD) Object.keys(apis).forEach(function (id) { if (apis[id].loop) apis[id].loop(); });
+
+  /* record view: scale the whole grid down so more boxes fit on screen.
+   * Default 50%; '-' and '=' adjust in 5% steps, '0' resets; ?scale=0.4 also works. */
+  if (RECORD) {
+    var scale = 0.5;
+    try {
+      var q = new URLSearchParams(location.search).get('scale');
+      var saved = localStorage.getItem('ux-record-scale');
+      if (q && +q > 0) scale = +q; else if (saved && +saved > 0) scale = +saved;
+    } catch (e) { /* storage unavailable */ }
+    var applyScale = function () {
+      main.style.width = (100 / scale) + 'vw';
+      main.style.transform = 'scale(' + scale + ')';
+      var vp = main.parentNode; // .record-viewport clips the unscaled layout box
+      if (vp && vp.classList.contains('record-viewport')) vp.style.height = Math.ceil(main.offsetHeight * scale) + 'px';
+    };
+    document.addEventListener('keydown', function (ev) {
+      if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
+      if (ev.key === '-' || ev.key === '_') scale = Math.max(0.25, +(scale - 0.05).toFixed(2));
+      else if (ev.key === '=' || ev.key === '+') scale = Math.min(1, +(scale + 0.05).toFixed(2));
+      else if (ev.key === '0') scale = 0.5;
+      else return;
+      try { localStorage.setItem('ux-record-scale', String(scale)); } catch (e) { /* ignore */ }
+      applyScale();
+    });
+    window.addEventListener('resize', applyScale);
+    if (typeof ResizeObserver !== 'undefined') new ResizeObserver(applyScale).observe(main);
+    applyScale();
+  }
   if (location.hash && document.getElementById(location.hash.slice(1))) {
     setTimeout(function () { goTo(location.hash.slice(1)); }, 0);
   }

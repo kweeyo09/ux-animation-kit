@@ -91,7 +91,10 @@ Using the gallery:
   next or previous demo, and the skip link jumps to the demos.
 - **Deep links:** every card has a stable anchor, e.g. `index.html#ux-14`.
 - **Recording view:** `record.html` shows only the 20 principle boxes on a beige
-  background, with every motion demo looping, ready for a screen recording. It always
+  background, with every motion demo looping, ready for a screen recording. The grid is
+  scaled to 50% so all 20 fit on one 1920×1080 screen. Press `-` / `=` to shrink or grow
+  it in 5% steps and `0` to reset (the setting is remembered), or open
+  `record.html?scale=0.4`. It always
   animates, ignoring the reduced-motion setting, so use it for capture, not as the
   public page.
 
