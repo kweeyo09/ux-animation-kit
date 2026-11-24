@@ -217,10 +217,9 @@
     shell.innerHTML =
       '<nav class="rec-list" aria-label="Principles"><ol></ol></nav>' +
       '<section class="rec-stage" aria-live="polite">' +
-        '<header class="rec-title"><span class="card-num" aria-hidden="true"></span><h1></h1></header>' +
-        '<div class="rec-row">' +
+        '<div class="rec-fit"><div class="rec-scale"></div></div>' +
+        '<div class="rec-nav">' +
           '<button type="button" class="rec-arrow" data-dir="-1" aria-label="Previous principle">&#8592;</button>' +
-          '<div class="rec-fit"><div class="rec-scale"></div></div>' +
           '<button type="button" class="rec-arrow" data-dir="1" aria-label="Next principle">&#8594;</button>' +
         '</div>' +
       '</section>';
@@ -255,8 +254,6 @@
         if (k === idx) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
       });
       var e = REG[idx];
-      shell.querySelector('.rec-title .card-num').textContent = pad(e.num);
-      shell.querySelector('.rec-title h1').textContent = e.title;
       try { history.replaceState(null, '', '#' + e.id); } catch (err) { /* ignore */ }
       var cur = list.querySelectorAll('button')[idx];
       if (cur && cur.scrollIntoView) cur.scrollIntoView({ block: 'nearest' });

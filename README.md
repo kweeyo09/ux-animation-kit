@@ -91,9 +91,9 @@ Using the gallery:
   next or previous demo, and the skip link jumps to the demos.
 - **Deep links:** every card has a stable anchor, e.g. `index.html#ux-14`.
 - **Recording view:** `record.html` is a presenter for screen recordings on a beige
-  background. The principle's title is at the top, the 20 names are listed on the left,
-  and one large box fills the rest, with motion demos looping. Switch with the ← → arrow
-  buttons, the ← → keys, or by clicking a name. `#ux-07` opens a given principle.
+  background. The 20 names are listed on the left, and one large box (with the
+  principle's title inside it) fills the rest, with motion demos looping. Switch with the
+  ← → buttons at the bottom, the ← → keys, or by clicking a name. `#ux-07` opens a given principle.
   `record.html?view=grid` shows all 20 boxes at once, scaled to fit one 1920×1080 screen:
   `-` / `=` resize it in 5% steps, `0` resets, and `?scale=0.4` sets the scale. It always
   animates, ignoring the reduced-motion setting, so use it for capture, not as the
@@ -120,7 +120,7 @@ npm run test:browser   # = node scripts/smoke-test.js      (needs Playwright + C
 - The 20/20 badge, and each card's heading and demo.
 - The playground: all 20 toggles, all 4 element types, and a visible effect for each UX
   law it switches on.
-- The recording view: presenter layout (title, list, one box, arrows and keys), and the
+- The recording view: presenter layout (list, one box with its title, arrows at the bottom, keys), and the
   grid layout (20 boxes on one screen, beige background, no descriptive text, all 12
   motion demos looping).
 - Replay and static frames on all 12 motion demos, and their two-button control bar.

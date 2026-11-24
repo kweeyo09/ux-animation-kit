@@ -396,28 +396,20 @@ body.record { background: var(--bg); overflow-x: hidden; }
 .rec-list button[aria-current="true"] { background: var(--accent-soft); color: var(--ink); font-weight: 600; box-shadow: inset 3px 0 0 var(--accent); }
 .rec-list .n { font: 600 12px var(--mono); color: var(--ink-2); min-width: 20px; }
 .rec-list button[aria-current="true"] .n { color: var(--accent); }
-.rec-stage { display: flex; flex-direction: column; gap: 24px; min-width: 0; min-height: 0; }
-.rec-title { display: flex; align-items: center; gap: 16px; }
-.rec-title .card-num { font-size: 18px; padding: 6px 12px; border-radius: 10px; }
-.rec-title h1 { font-size: 44px; line-height: 1.05; letter-spacing: -.02em; margin: 0; }
-.rec-row { flex: 1; display: grid; grid-template-columns: 56px minmax(0, 1fr) 56px; align-items: center; gap: 24px; min-height: 0; }
+.rec-stage { display: flex; flex-direction: column; gap: 20px; min-width: 0; min-height: 0; }
+.rec-fit { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+.rec-scale { position: absolute; left: 50%; top: 50%; width: 960px; transform-origin: 50% 50%; }
+.rec-nav { display: flex; justify-content: center; gap: 16px; }
 .rec-arrow { width: 56px; height: 56px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); font-size: 24px; line-height: 1; cursor: pointer; color: var(--ink); box-shadow: var(--shadow); display: grid; place-items: center; }
 .rec-arrow:hover { border-color: var(--accent); color: var(--accent); }
-.rec-fit { position: relative; height: 100%; min-height: 0; overflow: hidden; }
-.rec-scale { position: absolute; left: 50%; top: 50%; width: 960px; transform-origin: 50% 50%; }
 .rec-present .record-grid { display: block; padding: 0; max-width: none; }
 .rec-present .card { display: none; }
 .rec-present .card.is-active { display: flex; }
-.rec-present .card .card-head { display: none; }
+.rec-present .card .card-head { gap: 14px; }
+.rec-present .card h2 { font-size: 30px; letter-spacing: -.02em; }
+.rec-present .card .card-num { font-size: 15px; padding: 5px 10px; border-radius: 9px; }
 @media (max-width: 1200px) {
   .rec-shell { grid-template-columns: 220px minmax(0, 1fr); gap: 24px; padding: 24px; }
-  .rec-stage { position: relative; }
-  .rec-row { grid-template-columns: minmax(0, 1fr); }
-  .rec-arrow { position: absolute; top: 0; width: 48px; height: 48px; font-size: 20px; }
-  .rec-arrow[data-dir="-1"] { right: 60px; }
-  .rec-arrow[data-dir="1"] { right: 0; }
-  .rec-title { padding-right: 124px; min-height: 48px; }
-  .rec-title h1 { font-size: 32px; }
   .rec-list button { font-size: 14px; padding: 8px 10px; min-height: 40px; }
 }
 @media (max-width: 700px) { .rec-shell { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); } .rec-list { max-height: 140px; } }
