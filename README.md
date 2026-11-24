@@ -79,9 +79,9 @@ Using the gallery:
 - **Playground (top of the page):** pick an element (button, card, dialog or toast), switch
   any of the 20 principles on or off, replay the entrance, press its button, simulate an
   error, and copy a spec for the combination you chose.
-- **Motion demos (1–12):** Replay, a timeline scrubber with ◀ ▶ step-through (in frames at
-  60fps), speed (1× / 0.5× / 0.25×), a "Static frames" view (filmstrip or onion skin), and
-  per-demo parameters.
+- **Motion demos (1–12):** an icon-only Replay button and a "Static frames" view (filmstrip
+  or onion skin, labelled in frames at 60fps). Some demos keep one parameter control, e.g.
+  the easing picker in Ease in & ease out.
 - **UX-law demos (13–20):** before/after comparisons you interact with: timed trials,
   hit counters, click counters.
 - **Motion preference:** the **Motion** buttons are **System** (follows
@@ -118,7 +118,7 @@ npm run test:browser   # = node scripts/smoke-test.js      (needs Playwright + C
   law it switches on.
 - The recording view: 20 boxes, beige background, no descriptive text, all 12 motion
   demos looping.
-- Replay, scrubbing and static frames on all 12 motion demos.
+- Replay and static frames on all 12 motion demos, and their two-button control bar.
 - A scripted interaction on every UX-law demo.
 - Reduced-motion emulation, keyboard navigation, focus visibility and accessible names.
 - Mobile layout, and console errors.

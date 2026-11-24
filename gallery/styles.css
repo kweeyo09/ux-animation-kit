@@ -381,3 +381,5 @@ body.record { background: var(--bg); }
 .save-row { gap: 12px; }
 .pg-row { gap: 10px; }
 .pbody > .btn { align-self: flex-start; }
+
+.btn.icon-only { width: 44px; padding: 0; font-size: 15px; }

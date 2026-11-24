@@ -53,19 +53,17 @@ async function launch() {
 
   /* motion demos: replay advances the timeline; frames view renders */
   for (const e of REG.filter(r => r.family === 'motion')) {
-    await page.locator(`#${e.id} button:has-text("Replay")`).click();
+    await page.locator(`#${e.id} button[aria-label^="Replay animation"]`).click();
   }
   await page.waitForTimeout(600);
   for (const e of REG.filter(r => r.family === 'motion')) {
-    const v = await page.locator(`#${e.id} .scrub input`).inputValue();
-    ok(Number(v) > 0, `${e.id} Replay advanced the timeline (scrub=${v})`);
+    const v = await page.locator(`#${e.id} .lab`).getAttribute('data-progress');
+    ok(Number(v) > 0, `${e.id} Replay advanced the animation (progress=${v})`);
   }
   await page.waitForTimeout(1600);
   for (const e of REG.filter(r => r.family === 'motion')) {
-    await page.locator(`#${e.id} .scrub input`).fill('500');
-    const lbl = await page.textContent(`#${e.id} .step-label`);
-    ok(/^\d+ \/ \d+f$/.test(lbl.trim()) && !lbl.startsWith('0 /'), `${e.id} scrubber seeks (${lbl.trim()})`);
-    await page.locator(`#${e.id} button[aria-label="Next step"]`).click();
+    const bar = await page.locator(`#${e.id} .lab > .controls`).first().locator('button').allTextContents();
+    ok(bar.length === 2 && bar[1].trim() === 'Static frames' && bar[0].trim() === '▶', `${e.id} control bar is icon-only Replay + Static frames (${bar.map(b => b.trim()).join(' | ')})`);
     await page.locator(`#${e.id} button:has-text("Static frames")`).click();
     const frames = await page.locator(`#${e.id} .frames:not([hidden]) :is(.frame, .onion-layer)`).count();
     ok(frames >= 10, `${e.id} static frames view shows ${frames} frames`);
@@ -264,15 +262,15 @@ async function launch() {
   ok(await rec.evaluate(() => getComputedStyle(document.body).backgroundColor) === 'rgb(241, 234, 220)', 'record: beige background');
   const visibleText = await rec.evaluate(() => Array.from(document.querySelectorAll('.summary, .card-id, .tag, .label-note, .group-title, header, nav, .lab > .controls, .demo > .controls, .demo > .readout, .lab > .readout')).filter(e => e.offsetParent !== null).length);
   ok(visibleText === 0, `record: no descriptive text, chrome or control bars visible (${visibleText})`);
-  const loopA = await rec.locator('#ux-01 .scrub input').inputValue();
+  const loopA = await rec.locator('#ux-01 .lab').getAttribute('data-progress');
   await rec.waitForTimeout(2600);
-  const loopB = await rec.locator('#ux-01 .scrub input').inputValue();
+  const loopB = await rec.locator('#ux-01 .lab').getAttribute('data-progress');
   await rec.waitForTimeout(700);
-  const loopC = await rec.locator('#ux-01 .scrub input').inputValue();
+  const loopC = await rec.locator('#ux-01 .lab').getAttribute('data-progress');
   ok(new Set([loopA, loopB, loopC]).size > 1, `record: motion demos loop (${loopA}, ${loopB}, ${loopC})`);
   const moving = new Set();
   for (let k = 0; k < 4; k++) {
-    (await rec.evaluate(() => Array.from(document.querySelectorAll('.card')).filter(c => { const i = c.querySelector('.scrub input'); return i && Number(i.value) > 0; }).map(c => c.id))).forEach(id => moving.add(id));
+    (await rec.evaluate(() => Array.from(document.querySelectorAll('.card')).filter(c => { const l = c.querySelector('.lab'); return l && Number(l.dataset.progress) > 0; }).map(c => c.id))).forEach(id => moving.add(id));
     await rec.waitForTimeout(500);
   }
   ok(moving.size === 12, `record: all 12 motion demos are playing (${moving.size})`);

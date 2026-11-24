@@ -70,7 +70,7 @@
   function btn(label, cls, attrs) { var b = el('<button type="button" class="btn ' + (cls || '') + '" ' + (attrs || '') + '>' + label + '</button>'); return b; }
 
   /* ---------------------------------------------------------- motion lab
-   * Shared harness for motion demos: side-by-side lanes, Replay, timeline scrubber
+   * Shared harness for motion demos: side-by-side lanes, Replay (icon only),
    * with step-through, speed, a static-frames comparison and parameter controls.
    * lane: { tag, label(params), with, html(params, W, H), build(stage, params, W, H) -> Animation[] , alt }
    */
@@ -148,33 +148,16 @@
 
     /* controls */
     var bar = el('<div class="controls"></div>');
-    var playBtn = btn('&#9654; Replay', 'primary', 'aria-label="Replay animation: ' + esc(ctx.title) + '"');
-    var scrubId = nid('scrub');
-    var scrubWrap = el('<span class="scrub"><button type="button" class="btn small" aria-label="Previous step">&#9664;</button><label class="visually-hidden" for="' + scrubId + '">Timeline position</label><input type="range" id="' + scrubId + '" min="0" max="1000" value="0"><button type="button" class="btn small" aria-label="Next step">&#9654;</button></span>');
-    var scrub = $(scrubWrap, 'input');
-    var stepLabel = el('<span class="step-label" title="Frames at 60fps"></span>');
-    var speedCtl = control({ type: 'select', label: 'Speed', value: '1', options: [{ value: '1', label: '1×' }, { value: '0.5', label: '0.5×' }, { value: '0.25', label: '0.25×' }] }, function (v) {
-      speed = Number(v); allAnims().forEach(function (a) { a.playbackRate = speed; });
-    });
+    var playBtn = btn('<span aria-hidden="true">&#9654;</span>', 'primary icon-only', 'aria-label="Replay animation: ' + esc(ctx.title) + '" title="Replay"');
     var framesBtn = btn('Static frames', '', 'aria-pressed="false"');
-    bar.append(playBtn, scrubWrap, stepLabel, speedCtl.node, framesBtn);
+    bar.append(playBtn, framesBtn);
 
+    /* progress (0–1) is kept on the lab element for tests and tooling; no visible timeline */
     function updateScrub(p) {
       p = Math.max(0, Math.min(1, p));
-      scrub.value = String(Math.round(p * 1000));
-      var T = total();
-      stepLabel.textContent = fr(p * T) + ' / ' + fr(T) + 'f';
-      scrub.setAttribute('aria-valuetext', 'frame ' + fr(p * T) + ' of ' + fr(T) + ', at 60 frames per second');
+      wrap.dataset.progress = p.toFixed(3);
     }
     playBtn.addEventListener('click', play);
-    scrub.addEventListener('input', function () { seek(Number(scrub.value) / 1000); });
-    var steps = function () { return nFrames - 1; };
-    $$(scrubWrap, 'button')[0].addEventListener('click', function () {
-      var i = Math.round(Number(scrub.value) / 1000 * steps()); seek(Math.max(0, i - 1) / steps());
-    });
-    $$(scrubWrap, 'button')[1].addEventListener('click', function () {
-      var i = Math.round(Number(scrub.value) / 1000 * steps()); seek(Math.min(steps(), i + 1) / steps());
-    });
     framesBtn.addEventListener('click', function () { userChoseMode = true; setMode(mode === 'frames' ? 'live' : 'frames'); });
 
     var paramBar = null;
@@ -305,13 +288,12 @@
     function drop(H) { return H - 12 - 34 - 8; }
     return motionLab(host, ctx, {
       layout: 'cols', height: 200, frames: 8,
-      params: [{ key: 'k', label: 'Squash amount', min: 0, max: 50, value: 30, unit: '%' }],
       lanes: [
         { tag: 'Without', label: 'Rigid ball', html: ballHtml, alt: 'A ball bounces without changing shape.',
           build: function (s, p, W, H) { return [$(s, '.bw').animate(yFrames(drop(H)), { duration: DUR, fill: 'both' })]; } },
         { tag: 'With', with: true, label: 'Squash & stretch', html: ballHtml, alt: 'A ball stretches as it falls and squashes flat on impact.',
           build: function (s, p, W, H) {
-            var k = p.k / 100;
+            var k = 0.5; // squash amount fixed at 50%
             function sc(sx, sy, m) { return 'scale(' + (1 + (sx - 1) * m) + ',' + (1 + (sy - 1) * m) + ')'; }
             var st = [1 - k * 0.4, 1 + k * 0.5], sq = [1 + k, 1 - k];
             return [
@@ -333,7 +315,7 @@
           } },
         { tag: 'UI', with: true, label: 'Toggle knob', html: '<div class="switch"><div class="knob-wrap"><div class="knob"></div></div></div>', alt: 'A toggle knob stretches wide while travelling, then settles.',
           build: function (s, p) {
-            var k = p.k / 100, io = 'cubic-bezier(.4,0,.2,1)';
+            var k = 0.5, io = 'cubic-bezier(.4,0,.2,1)';
             var accent = cssVar('--accent') || '#4f46e5';
             return [
               $(s, '.knob-wrap').animate([
