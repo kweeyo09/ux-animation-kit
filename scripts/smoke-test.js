@@ -256,7 +256,7 @@ async function launch() {
   /* record view: just the 20 boxes on beige, motion looping */
   const rec = await (await browser.newContext({ viewport: { width: 1920, height: 1080 } })).newPage();
   rec.on('pageerror', e => errors.push('record pageerror: ' + e.message));
-  await rec.goto('file://' + path.join(ROOT, 'gallery', 'record.html'));
+  await rec.goto('file://' + path.join(ROOT, 'gallery', 'record.html') + '?view=grid');
   await rec.waitForTimeout(500);
   ok(await rec.locator('.card').count() === 20, 'record: 20 boxes');
   const fit = await rec.evaluate(() => ({ inView: Array.from(document.querySelectorAll('.card')).filter(c => { const r = c.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight && r.right <= innerWidth; }).length, scroll: document.documentElement.scrollHeight - innerHeight }));
@@ -277,6 +277,26 @@ async function launch() {
   }
   ok(moving.size === 12, `record: all 12 motion demos are playing (${moving.size})`);
   await rec.screenshot({ path: path.join(SHOTS, 'record-view.png') });
+
+  /* record view, presenter layout (default): title on top, list on the left, one big box, arrows */
+  const pres = await (await browser.newContext({ viewport: { width: 1920, height: 1080 } })).newPage();
+  pres.on('pageerror', e => errors.push('presenter pageerror: ' + e.message));
+  await pres.goto('file://' + path.join(ROOT, 'gallery', 'record.html'));
+  await pres.waitForTimeout(600);
+  ok((await pres.textContent('.rec-title h1')) === 'Squash & stretch', 'presenter: title at top shows the first principle');
+  ok(await pres.locator('.rec-list button').count() === 20, 'presenter: list of 20 names on the left');
+  ok(await pres.locator('.card.is-active').count() === 1 && await pres.locator('.card:visible').count() === 1, 'presenter: one box at a time');
+  await pres.keyboard.press('ArrowRight');
+  ok((await pres.textContent('.rec-title h1')) === 'Anticipation wind-up', 'presenter: → key goes to the next principle');
+  await pres.locator('.rec-list button', { hasText: 'Frequency of use' }).click();
+  ok((await pres.textContent('.rec-title h1')) === 'Frequency of use' && await pres.locator('#ux-20.is-active').count() === 1, 'presenter: clicking a name shows that principle');
+  await pres.locator('.rec-arrow[data-dir="1"]').click();
+  ok((await pres.textContent('.rec-title h1')) === 'Squash & stretch', 'presenter: → arrow wraps from 20 to 1');
+  await pres.locator('.rec-arrow[data-dir="-1"]').click();
+  ok((await pres.textContent('.rec-title h1')) === 'Frequency of use', 'presenter: ← arrow goes back');
+  const fits = await pres.evaluate(() => { const f = document.querySelector('.rec-fit').getBoundingClientRect(), c = document.querySelector('.card.is-active').getBoundingClientRect(); return c.top >= f.top - 1 && c.bottom <= f.bottom + 1 && c.left >= f.left - 1 && c.right <= f.right + 1 && c.width > 900; });
+  ok(fits, 'presenter: the active box is scaled up and fits the stage');
+  await pres.screenshot({ path: path.join(SHOTS, 'record-presenter.png') });
 
   ok(errors.length === 0, `no page or console errors (${errors.length}${errors.length ? ': ' + errors.slice(0, 3).join(' | ') : ''})`);
   await browser.close();

@@ -144,7 +144,7 @@
     if (ev.altKey || ev.ctrlKey || ev.metaKey) return;
     var t = ev.target;
     if (t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
-    if (ev.key !== 'n' && ev.key !== 'p') return;
+    if (RECORD || (ev.key !== 'n' && ev.key !== 'p')) return;
     var cards = Array.prototype.filter.call(document.querySelectorAll('.card'), function (c) { return !c.hidden; });
     var cur = t && t.closest ? t.closest('.card') : null;
     var idx = cur ? cards.indexOf(cur) : -1;
@@ -176,7 +176,9 @@
 
   /* record view: scale the whole grid down so more boxes fit on screen.
    * Default 50%; '-' and '=' adjust in 5% steps, '0' resets; ?scale=0.4 also works. */
-  if (RECORD) {
+  var GRID = RECORD && new URLSearchParams(location.search).get('view') === 'grid';
+  if (RECORD && !GRID) presenter();
+  if (GRID) {
     var scale = 0.5;
     try {
       var q = new URLSearchParams(location.search).get('scale');
@@ -202,7 +204,75 @@
     if (typeof ResizeObserver !== 'undefined') new ResizeObserver(applyScale).observe(main);
     applyScale();
   }
-  if (location.hash && document.getElementById(location.hash.slice(1))) {
+  if (!RECORD && location.hash && document.getElementById(location.hash.slice(1))) {
     setTimeout(function () { goTo(location.hash.slice(1)); }, 0);
+  }
+
+  /* record view, presenter layout: title on top, list of the 20 names on the left,
+   * one large box at a time, arrows (and ← → keys) to move between them. */
+  function presenter() {
+    document.body.classList.add('rec-present');
+    var shell = document.createElement('div');
+    shell.className = 'rec-shell';
+    shell.innerHTML =
+      '<nav class="rec-list" aria-label="Principles"><ol></ol></nav>' +
+      '<section class="rec-stage" aria-live="polite">' +
+        '<header class="rec-title"><span class="card-num" aria-hidden="true"></span><h1></h1></header>' +
+        '<div class="rec-row">' +
+          '<button type="button" class="rec-arrow" data-dir="-1" aria-label="Previous principle">&#8592;</button>' +
+          '<div class="rec-fit"><div class="rec-scale"></div></div>' +
+          '<button type="button" class="rec-arrow" data-dir="1" aria-label="Next principle">&#8594;</button>' +
+        '</div>' +
+      '</section>';
+    var vp = main.parentNode;
+    vp.parentNode.replaceChild(shell, vp);
+    var fitEl = shell.querySelector('.rec-fit'), scaleEl = shell.querySelector('.rec-scale');
+    scaleEl.appendChild(main);
+    var cards = Array.prototype.slice.call(main.querySelectorAll('.card'));
+    var list = shell.querySelector('.rec-list ol');
+    REG.forEach(function (e, i) {
+      var li = document.createElement('li');
+      li.innerHTML = '<button type="button"><span class="n">' + pad(e.num) + '</span>' + esc(e.title) + '</button>';
+      li.firstChild.addEventListener('click', function () { show(i); });
+      list.appendChild(li);
+    });
+    var idx = 0;
+    var fromHash = REG.map(function (e) { return e.id; }).indexOf(location.hash.slice(1));
+    if (fromHash >= 0) idx = fromHash;
+    function fit() {
+      var w = scaleEl.offsetWidth, h = scaleEl.offsetHeight;
+      if (!w || !h) return;
+      var s = Math.min(fitEl.clientWidth / w, fitEl.clientHeight / h, 1.8);
+      scaleEl.style.transform = 'translate(-50%, -50%) scale(' + s.toFixed(3) + ')';
+    }
+    function show(i) {
+      idx = (i + cards.length) % cards.length;
+      cards.forEach(function (c, k) { c.classList.toggle('is-active', k === idx); });
+      Array.prototype.forEach.call(list.querySelectorAll('button'), function (b, k) {
+        if (k === idx) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
+      });
+      var e = REG[idx];
+      shell.querySelector('.rec-title .card-num').textContent = pad(e.num);
+      shell.querySelector('.rec-title h1').textContent = e.title;
+      try { history.replaceState(null, '', '#' + e.id); } catch (err) { /* ignore */ }
+      var cur = list.querySelectorAll('button')[idx];
+      if (cur && cur.scrollIntoView) cur.scrollIntoView({ block: 'nearest' });
+      fit();
+      var api = apis[e.id];
+      if (api && api.loop) api.loop();
+    }
+    Array.prototype.forEach.call(shell.querySelectorAll('.rec-arrow'), function (b) {
+      b.addEventListener('click', function () { show(idx + Number(b.dataset.dir)); });
+    });
+    document.addEventListener('keydown', function (ev) {
+      var t = ev.target;
+      if (ev.altKey || ev.ctrlKey || ev.metaKey) return;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA')) return;
+      if (ev.key === 'ArrowRight' || ev.key === 'PageDown') { ev.preventDefault(); show(idx + 1); }
+      else if (ev.key === 'ArrowLeft' || ev.key === 'PageUp') { ev.preventDefault(); show(idx - 1); }
+    });
+    window.addEventListener('resize', fit);
+    if (typeof ResizeObserver !== 'undefined') { var ro = new ResizeObserver(fit); ro.observe(fitEl); ro.observe(main); }
+    show(idx);
   }
 })();
