@@ -343,13 +343,13 @@
 
   /* ux-02 Anticipation wind-up */
   register('ux-02', function (host, ctx) {
+    var WINDUP = 20; // wind-up distance in px, shown in the lane caption
     var cardHtml = function (p, W, H) {
       return '<div class="ghost" style="right:12px;top:' + (H / 2 - 30) + 'px;width:70px;height:60px"><span>Sent</span></div>' +
         '<div class="chip" style="left:16px;top:' + (H / 2 - 18) + 'px;width:120px;text-align:center">&#9993; Message</div>';
     };
     return motionLab(host, ctx, {
       layout: 'rows', height: 110, frames: 7, widthDependent: true, frameStyle: 'onion',
-      params: [{ key: 'w', label: 'Wind-up distance', min: 0, max: 40, value: 24, unit: 'px' }],
       lanes: [
         { label: 'Leaves immediately', html: cardHtml, alt: 'A card slides off to the right with no preparation.',
           build: function (s, p, W) {
@@ -360,12 +360,12 @@
               { offset: 1, transform: 'translateX(' + D + 'px) rotate(6deg)', opacity: 0 }
             ], { duration: 650, fill: 'both' })];
           } },
-        { with: true, label: function (p) { return 'Pulls back ' + p.w + 'px first'; }, html: cardHtml, alt: 'A card pulls back slightly to the left, then slides off to the right.',
+        { with: true, label: 'Pulls back ' + WINDUP + 'px first', html: cardHtml, alt: 'A card pulls back slightly to the left, then slides off to the right.',
           build: function (s, p, W) {
             var D = W - 16 + 20;
             return [$(s, '.chip').animate([
               { offset: 0, transform: 'translateX(0) rotate(0) scale(1)', easing: 'cubic-bezier(0,0,.2,1)' },
-              { offset: 0.28, transform: 'translateX(' + (-p.w) + 'px) rotate(-3deg) scale(.97)', easing: 'cubic-bezier(.55,0,1,.45)' },
+              { offset: 0.28, transform: 'translateX(' + (-WINDUP) + 'px) rotate(-3deg) scale(.97)', easing: 'cubic-bezier(.55,0,1,.45)' },
               { offset: 0.9, transform: 'translateX(' + D * 0.85 + 'px) rotate(5deg) scale(1)', opacity: 1 },
               { offset: 1, transform: 'translateX(' + D + 'px) rotate(6deg)', opacity: 0 }
             ], { duration: 900, fill: 'both' })];
