@@ -67,8 +67,8 @@
     card.innerHTML =
       '<div class="card-head"><span class="card-num" aria-hidden="true">' + pad(e.num) + '</span>' +
       '<h2 id="' + e.id + '-title" tabindex="-1"><span class="visually-hidden">' + e.num + '. </span>' + esc(e.title) + '</h2>' +
-      '<span class="tag">' + (e.family === 'motion' ? 'Motion' : 'UX law') + '</span></div>' +
       '<span class="card-id">' + e.id + '</span>' +
+      '<span class="tag">' + (e.family === 'motion' ? 'Motion' : 'UX law') + '</span></div>' +
       '<p class="summary">' + esc(e.summary) + '</p>' +
       (e.labelNote ? '<p class="label-note"><strong>Label unverified:</strong> ' + esc(e.labelNote) + '</p>' : '') +
       '<div class="demo" data-demo="' + e.id + '"></div>';
