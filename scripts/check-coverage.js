@@ -100,6 +100,24 @@ heads.forEach((h, i) => {
 });
 check(fs.existsSync(path.join(SKILL, 'references', 'accessibility-performance.md')), 'accessibility/performance reference exists');
 
+/* ---------- any principle on any element ---------- */
+const PG = require(path.join(GALLERY, 'playground.js'));
+check(JSON.stringify(Object.keys(PG.SPEC).sort()) === JSON.stringify(EXPECTED_IDS), 'playground has a spec line for each of the 20 principles');
+check(PG.TYPES.length >= 4, `playground offers ${PG.TYPES.length} element types`);
+check(html.indexOf('src="playground.js"') > order[1] && html.indexOf('src="playground.js"') < order[2], 'index.html loads playground.js between demos.js and app.js');
+const rec = fs.readFileSync(path.join(GALLERY, 'record.html'), 'utf8');
+check(!/playground\.js/.test(rec), 'record.html stays 20 boxes only (no playground)');
+const recipes = fs.readFileSync(path.join(SKILL, 'references', 'element-recipes.md'), 'utf8');
+EXPECTED_IDS.forEach((id, i) => check(recipes.includes(`| ${id} | ${EXPECTED[i]} |`), `element-recipes maps ${id} to a hook`));
+const sections = recipes.split(/^### /m).slice(1);
+check(sections.length >= 6, `element-recipes has ${sections.length} element recipes`);
+sections.forEach(sec => {
+  const name = sec.split('\n')[0].trim();
+  const missing = EXPECTED_IDS.filter(id => !new RegExp('^- ' + id + ':', 'm').test(sec));
+  check(missing.length === 0, `recipe "${name}" applies all 20 principles${missing.length ? ' (missing ' + missing.join(', ') + ')' : ''}`);
+});
+check(skillMd.includes('## Apply any principle to any element') && skillMd.includes('references/element-recipes.md'), 'SKILL.md teaches applying any principle to any element');
+
 /* ---------- report ---------- */
 console.log('\nUX & Animation kit: coverage check\n');
 console.log('ID     Principle               Registry  Demo  Reference');

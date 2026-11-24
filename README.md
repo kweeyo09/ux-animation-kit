@@ -17,11 +17,14 @@ ux-animation-kit/
 │   ├── README.md
 │   └── references/
 │       ├── principles.md                 # all 20: what · when · how · pitfall
+│       ├── element-recipes.md            # any principle on any element: hooks, 8 element recipes, stacking rules
 │       └── accessibility-performance.md  # reduced motion, WCAG, keyboard, performance, verification recipes
 ├── gallery/
 │   ├── index.html   styles.css   app.js
+│   ├── record.html                       # recording view: just the 20 boxes on beige, motion looping
 │   ├── registry.js                       # shared registry: gallery + coverage check
-│   └── demos.js                          # 20 demos, registered by ID
+│   ├── demos.js                          # 20 demos, registered by ID
+│   └── playground.js                     # apply any of the 20 principles to a button, card, dialog or toast
 ├── scripts/
 │   ├── check-coverage.js                 # node, no dependencies
 │   ├── smoke-test.js                     # optional, Playwright + Chromium
@@ -73,9 +76,12 @@ There is no build step and nothing to install.
 
 Using the gallery:
 
-- **Motion demos (1–12):** Replay, a timeline scrubber with ◀ ▶ step-through, speed
-  (1× / 0.5× / 0.25×), a "Static frames" view (filmstrip or onion skin), and per-demo
-  parameters.
+- **Playground (top of the page):** pick an element (button, card, dialog or toast), switch
+  any of the 20 principles on or off, replay the entrance, press its button, simulate an
+  error, and copy a spec for the combination you chose.
+- **Motion demos (1–12):** Replay, a timeline scrubber with ◀ ▶ step-through (in frames at
+  60fps), speed (1× / 0.5× / 0.25×), a "Static frames" view (filmstrip or onion skin), and
+  per-demo parameters.
 - **UX-law demos (13–20):** before/after comparisons you interact with: timed trials,
   hit counters, click counters.
 - **Motion preference:** the **Motion** buttons are **System** (follows
@@ -84,6 +90,10 @@ Using the gallery:
 - **Keyboard:** <kbd>Tab</kbd> moves through controls, <kbd>n</kbd> / <kbd>p</kbd> go to the
   next or previous demo, and the skip link jumps to the demos.
 - **Deep links:** every card has a stable anchor, e.g. `index.html#ux-14`.
+- **Recording view:** `record.html` shows only the 20 principle boxes on a beige
+  background, with every motion demo looping, ready for a screen recording. It always
+  animates, ignoring the reduced-motion setting, so use it for capture, not as the
+  public page.
 
 ## 3. Verify
 
@@ -103,7 +113,11 @@ npm run test:browser   # = node scripts/smoke-test.js      (needs Playwright + C
 
 `smoke-test.js` loads the gallery in headless Chromium and checks:
 
-- The 20/20 badge, and each card's heading, demo and "what to notice" cue.
+- The 20/20 badge, and each card's heading and demo.
+- The playground: all 20 toggles, all 4 element types, and a visible effect for each UX
+  law it switches on.
+- The recording view: 20 boxes, beige background, no descriptive text, all 12 motion
+  demos looping.
 - Replay, scrubbing and static frames on all 12 motion demos.
 - A scripted interaction on every UX-law demo.
 - Reduced-motion emulation, keyboard navigation, focus visibility and accessible names.

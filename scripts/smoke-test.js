@@ -76,6 +76,42 @@ async function launch() {
   const ctrl = await page.evaluate(() => document.querySelectorAll('.lab').length);
   ok(ctrl >= 12, `motion labs rendered (${ctrl})`);
 
+  /* playground: any principle on any element */
+  ok(await page.locator('#playground .pg-chip').count() === 20, 'playground: 20 principle toggles');
+  ok(await page.locator('#playground .pg-types button').count() === 4, 'playground: 4 element types');
+  const pg = page.locator('#playground');
+  const chip = id => pg.locator(`.pg-chip input[value="${id}"]`);
+  await pg.locator('[data-none]').click();
+  ok((await pg.locator('.pg-code').textContent()) === '483920175264', 'playground ux-16 off: code unchunked');
+  ok(await pg.locator('.pg-actions .pg-btn').count() === 6, 'playground ux-15 off: 6 equal actions');
+  ok((await pg.locator('.pg-primary').getAttribute('data-act')) === 'regen', 'playground ux-20 off: a rare action is primary');
+  ok((await pg.locator('.pg-primary').boundingBox()).height < 30, 'playground ux-13 off: small primary');
+  ok(await pg.locator('.pg-el.pg-mixed').count() === 1, 'playground ux-12 off: mixed styles');
+  ok((await pg.locator('.pg-interp').textContent()).includes('Invalid'), 'playground ux-18 off: strict date rejects "12 Mar 2026"');
+  ok(await pg.locator('.pg-head .pg-close').count() === 0, 'playground ux-19 off: close button not top-right');
+  for (const id of ['ux-16', 'ux-15', 'ux-20', 'ux-13', 'ux-12', 'ux-18', 'ux-19', 'ux-14', 'ux-17', 'ux-10']) await chip(id).check();
+  ok((await pg.locator('.pg-code').textContent()) === '4839 2017 5264', 'playground ux-16 on: code chunked');
+  ok(await pg.locator('.pg-actions .pg-btn').count() === 1, 'playground ux-15 on: one primary + More');
+  ok((await pg.locator('.pg-primary').getAttribute('data-act')) === 'copy', 'playground ux-20 on: most-used action is primary');
+  ok((await pg.locator('.pg-primary').boundingBox()).height >= 44, 'playground ux-13 on: 44px primary');
+  ok(await pg.locator('.pg-el.pg-mixed').count() === 0, 'playground ux-12 on: consistent styles');
+  ok((await pg.locator('.pg-interp').textContent()).includes('March 2026'), 'playground ux-18 on: lenient date read back');
+  ok(await pg.locator('.pg-head .pg-close').count() === 1, 'playground ux-19 on: close top-right');
+  ok(await pg.evaluate(el => getComputedStyle(el.querySelector('.pg-close'), '::before').width) === '44px', 'playground ux-14 on: 44px hit area on 16px icon');
+  await pg.locator('.pg-primary').click();
+  await page.waitForTimeout(60);
+  ok((await pg.locator('.pg-primary').textContent()).includes('Copying'), 'playground ux-17 on: instant acknowledgement');
+  await pg.locator('[data-error]').click();
+  ok(await pg.locator('.pg-err:not([hidden])').count() === 1, 'playground ux-10 on: error message shown');
+  for (const t of ['Button', 'Dialog', 'Toast', 'Card']) {
+    await pg.locator('.pg-types button', { hasText: t }).click();
+    ok(await pg.locator('.pg-el.pg-' + t.toLowerCase()).count() === 1, `playground renders ${t}`);
+  }
+  await pg.locator('[data-all]').click();
+  await page.waitForTimeout(400);
+  ok((await pg.locator('.pg-spec pre').textContent()).split('\n').filter(l => /^ux-\d\d/.test(l)).length === 20, 'playground spec lists all 20 when all on');
+  await pg.screenshot({ path: path.join(SHOTS, 'playground.png') });
+
   /* ux-13 Fitts */
   await page.click('#ux-13 button:has-text("small")');
   await page.click('#ux-13 .f-start'); await page.waitForTimeout(150); await page.click('#ux-13 .f-target');

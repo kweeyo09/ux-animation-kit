@@ -38,6 +38,18 @@
 
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
+  /* element playground: any principle on any element (not part of the 20-box record view) */
+  var pgHost = null;
+  if (!RECORD && window.UX_PLAYGROUND) {
+    var pgSec = document.createElement('section');
+    pgSec.className = 'pg-section'; pgSec.id = 'playground';
+    pgSec.setAttribute('aria-labelledby', 'playground-title');
+    pgSec.innerHTML = '<div class="card-head"><span class="card-num" aria-hidden="true">+</span><h2 id="playground-title" tabindex="-1">Playground: any principle, any element</h2></div><div class="pg-host"></div>';
+    main.appendChild(pgSec);
+    pgHost = pgSec.querySelector('.pg-host');
+    if (jump) { var pgOp = document.createElement('option'); pgOp.value = 'playground'; pgOp.textContent = '+ · Playground'; jump.appendChild(pgOp); }
+  }
+
   var lastFamily = null;
   REG.forEach(function (e) {
     if (!RECORD && e.family !== lastFamily) {
@@ -89,6 +101,12 @@
     }
   });
 
+  if (pgHost) {
+    try {
+      window.UX_PLAYGROUND.mount(pgHost, { id: 'playground', title: 'Playground', get reduced() { return reduced(); }, onReducedChange: function (fn) { listeners.push(fn); } });
+    } catch (err) { console.error(err); pgHost.innerHTML = '<p class="demo-error">Playground failed to load: ' + esc(err.message) + '</p>'; }
+  }
+
   /* ---------- coverage ---------- */
   var unique = REG.filter(function (e) { return document.querySelectorAll('[id="' + e.id + '"]').length === 1; }).map(function (e) { return e.id; });
   var ok = mounted.filter(function (id) { return unique.indexOf(id) !== -1; });
@@ -105,7 +123,7 @@
       filter = b.dataset.v;
       document.querySelectorAll('#filter button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
       document.querySelectorAll('.card, .group-title').forEach(function (c) { c.hidden = filter !== 'all' && c.dataset.family !== filter; });
-      document.querySelectorAll('.toc a').forEach(function (a) { a.parentNode.hidden = filter !== 'all' && document.getElementById(a.dataset.id).dataset.family !== filter; });
+      document.querySelectorAll('.toc a').forEach(function (a) { var t = document.getElementById(a.dataset.id); a.parentNode.hidden = !!(t && t.dataset.family) && filter !== 'all' && t.dataset.family !== filter; });
     });
   });
 

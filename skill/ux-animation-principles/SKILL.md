@@ -1,6 +1,6 @@
 ---
 name: ux-animation-principles
-description: Apply 20 UX and animation principles (12 animation principles adapted to UI, plus Fitts's, Hick's, Miller's, Postel's and Jakob's laws, the Doherty threshold, bigger hit areas and frequency of use) when designing, reviewing or implementing UI motion, micro-interactions, transitions, feedback, target sizing, menus, forms or layouts. Use when a user asks to animate an interface, make UI feel better or snappier, review motion or interaction design, choose durations and easing, size touch targets, simplify choices, or write a motion spec.
+description: Apply 20 UX and animation principles (12 animation principles adapted to UI, plus Fitts's, Hick's, Miller's, Postel's and Jakob's laws, the Doherty threshold, bigger hit areas and frequency of use) when designing, reviewing or implementing UI motion, micro-interactions, transitions, feedback, target sizing, menus, forms or layouts. Use when a user asks to animate an interface, make UI feel better or snappier, review motion or interaction design, choose durations and easing, size touch targets, simplify choices, write a motion spec, or add a specific principle to a specific element (e.g. add squash & stretch to this button).
 ---
 
 # UX & Animation Principles
@@ -9,6 +9,8 @@ A working method for turning 20 principles into concrete, testable UI and motion
 decisions. The full per-principle reference (what it does, when to use it, how to
 implement it, one common pitfall) is in `references/principles.md`. Accessibility,
 reduced-motion and performance rules are in `references/accessibility-performance.md`.
+How to put any principle on any element, with recipes for common elements and rules for
+combining principles, is in `references/element-recipes.md`.
 Read the reference sections for the principles you select; do not load all 20 when
 only three apply.
 
@@ -148,6 +150,30 @@ check you did not perform):
 - [ ] Interaction feedback appears within 100ms; results or progress within 400ms.
 - [ ] Tested at least once at 0.25× speed (DevTools Animations panel or a slowed
       clock) to inspect easing and overlap.
+
+## Apply any principle to any element
+
+Any of the 20 principles can be added to any element in a design: a button, card,
+dialog, toast, toggle, input, list row, menu, or a whole screen. When the user asks to
+add a principle to an element ("give this card follow through", "make the toast
+snappy", "apply Fitts's law to the checkout button"), or asks which principles could
+improve an element:
+
+1. **Name the element and its parts.** Container, children, actions, inputs, and where
+   it sits.
+2. **Find the hook.** Each principle attaches to one of six hooks: enter/exit, press,
+   feedback, content, actions, or placement & size. Look up the principle's row and the
+   element's recipe in `references/element-recipes.md`.
+3. **If the element has no obvious place for the principle, go one level up and say
+   so.** A toast has no input, so Postel's law applies to the field its "Reply" action
+   opens.
+4. **Check how it stacks with principles the element already uses.** See the stacking
+   rules in the same file. Pick one hero principle per element and keep the rest subtle.
+5. **Give the spec and code for that element only.** Then verify it with the checklist
+   above, including reduced motion.
+
+Never refuse a principle because the element seems too small or too plain. A
+one-pixel shift, a 120ms ease-out or a 44px hit area is still the principle applied.
 
 ## Output format
 
