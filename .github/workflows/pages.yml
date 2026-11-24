@@ -34,6 +34,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      # Cache-bust: stamp the commit onto script and stylesheet links so a new deploy
+      # never runs against cached JS/CSS from the previous one.
+      - name: Version asset links
+        run: |
+          v="${GITHUB_SHA::7}"
+          sed -i -E "s/(src=\"[a-z]+\.js)\"/\1?v=$v\"/g; s/(href=\"styles\.css)\"/\1?v=$v\"/g" gallery/*.html
+          grep -h -E 'src=|styles.css' gallery/*.html
       - uses: actions/upload-pages-artifact@v5
         with:
           path: gallery
