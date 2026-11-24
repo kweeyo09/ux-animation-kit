@@ -240,6 +240,9 @@
     var fromHash = REG.map(function (e) { return e.id; }).indexOf(location.hash.slice(1));
     if (fromHash >= 0) idx = fromHash;
     function fit() {
+      /* lay the box out at the stage's own width (560–960px) so it reflows instead of shrinking */
+      var target = Math.max(560, Math.min(960, fitEl.clientWidth)) + 'px';
+      if (scaleEl.style.width !== target) scaleEl.style.width = target;
       var w = scaleEl.offsetWidth, h = scaleEl.offsetHeight;
       if (!w || !h) return;
       var s = Math.min(fitEl.clientWidth / w, fitEl.clientHeight / h, 1.8);

@@ -409,4 +409,15 @@ body.record { background: var(--bg); overflow-x: hidden; }
 .rec-present .card { display: none; }
 .rec-present .card.is-active { display: flex; }
 .rec-present .card .card-head { display: none; }
-@media (max-width: 900px) { .rec-shell { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); } .rec-list { max-height: 160px; } }
+@media (max-width: 1200px) {
+  .rec-shell { grid-template-columns: 220px minmax(0, 1fr); gap: 24px; padding: 24px; }
+  .rec-stage { position: relative; }
+  .rec-row { grid-template-columns: minmax(0, 1fr); }
+  .rec-arrow { position: absolute; top: 0; width: 48px; height: 48px; font-size: 20px; }
+  .rec-arrow[data-dir="-1"] { right: 60px; }
+  .rec-arrow[data-dir="1"] { right: 0; }
+  .rec-title { padding-right: 124px; min-height: 48px; }
+  .rec-title h1 { font-size: 32px; }
+  .rec-list button { font-size: 14px; padding: 8px 10px; min-height: 40px; }
+}
+@media (max-width: 700px) { .rec-shell { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); } .rec-list { max-height: 140px; } }
