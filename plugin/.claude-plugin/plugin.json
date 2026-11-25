@@ -1,0 +1,12 @@
+{
+  "name": "ux-animation-principles",
+  "description": "20 UX and animation principles for UI work: assess the task, pick the relevant principles, turn them into concrete motion and layout decisions, apply any principle to any element, and verify accessibility, reduced motion and performance.",
+  "version": "1.1.0",
+  "author": {
+    "name": "Kiki Zhang",
+    "url": "https://github.com/kweeyo09"
+  },
+  "homepage": "https://kweeyo09.github.io/ux-animation-kit/",
+  "repository": "https://github.com/kweeyo09/ux-animation-kit",
+  "keywords": ["ux", "animation", "motion", "ui", "accessibility", "design"]
+}

@@ -2,23 +2,27 @@
 
 Two deliverables built from one shared list of 20 principles (`ux-01` to `ux-20`):
 
-1. **`skill/ux-animation-principles/`** is an importable Claude Skill. It teaches Claude to
-   assess a UI task, choose the relevant principles, turn them into concrete motion and
-   layout decisions, and verify the result, including accessibility, reduced motion and
-   performance.
+1. **`plugin/skills/ux-animation-principles/`** is the Claude Skill, packaged as a Claude Code
+   plugin in a one-plugin marketplace (this repo), and as a ZIP for the Claude apps.
+   It teaches Claude to assess a UI task, choose the relevant principles, turn them into
+   concrete motion and layout decisions, apply any principle to any element, and verify the
+   result, including accessibility, reduced motion and performance.
 2. **`gallery/`** is a self-contained, dependency-free web app with one interactive demo per
    principle. Live at **https://kweeyo09.github.io/ux-animation-kit/**. It redeploys on every
    push to `main`, after the coverage check passes (`.github/workflows/pages.yml`).
 
 ```
 ux-animation-kit/
-├── skill/ux-animation-principles/
-│   ├── SKILL.md                          # frontmatter + workflow (assess → select → translate → implement → verify)
-│   ├── README.md
-│   └── references/
-│       ├── principles.md                 # all 20: what · when · how · pitfall
-│       ├── element-recipes.md            # any principle on any element: hooks, 8 element recipes, stacking rules
-│       └── accessibility-performance.md  # reduced motion, WCAG, keyboard, performance, verification recipes
+├── .claude-plugin/marketplace.json       # makes this repo a Claude Code plugin marketplace
+├── plugin/
+│   ├── .claude-plugin/plugin.json        # plugin manifest (name, version, author)
+│   └── skills/ux-animation-principles/
+│       ├── SKILL.md                      # frontmatter + workflow (assess → select → translate → implement → verify)
+│       ├── README.md
+│       └── references/
+│           ├── principles.md             # all 20: what · when · how · pitfall
+│           ├── element-recipes.md        # any principle on any element: hooks, 8 element recipes, stacking rules
+│           └── accessibility-performance.md  # reduced motion, WCAG, keyboard, performance, verification recipes
 ├── gallery/
 │   ├── index.html   styles.css   app.js
 │   ├── record.html                       # recording view: just the 20 boxes on beige, motion looping
@@ -34,36 +38,75 @@ ux-animation-kit/
 └── package.json
 ```
 
-## 1. Import the Skill
+## 1. Install the Skill
 
-Run `npm run package` to build `dist/ux-animation-principles.zip` (the `dist/` folder is not committed). The archive contains the folder `ux-animation-principles/`
-at its top level, with `SKILL.md` inside it. This is the structure Claude expects.
+### Claude Code (plugin, updates from GitHub)
 
-**Claude apps (web, desktop):**
+This repo is a Claude Code plugin marketplace. In Claude Code (2.1.275 or later) run:
+
+```
+/plugin install ux-animation-principles --marketplace kweeyo09/ux-animation-kit
+```
+
+On older versions, use the two-step form:
+
+```
+/plugin marketplace add kweeyo09/ux-animation-kit
+/plugin install ux-animation-principles@ux-animation-kit
+```
+
+The same works from a terminal with `claude plugin marketplace add kweeyo09/ux-animation-kit`
+and `claude plugin install ux-animation-principles@ux-animation-kit`. To pick up changes
+after a push, run `claude plugin marketplace update ux-animation-kit`, then
+`claude plugin update ux-animation-principles@ux-animation-kit`, and restart Claude Code.
+Bump `version` in both
+`plugin/.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` when you release
+a change, so Claude Code sees a new version.
+
+Plugin skills are namespaced: the skill may appear as
+`ux-animation-principles:ux-animation-principles`. Claude still picks it up automatically
+from its description.
+
+**Without the plugin system**, copy the folder instead (updates are manual):
+
+```bash
+# macOS / Linux: personal, available in all your projects
+mkdir -p ~/.claude/skills && cp -R plugin/skills/ux-animation-principles ~/.claude/skills/
+```
+
+```powershell
+# Windows PowerShell: personal, available in all your projects
+New-Item -ItemType Directory -Force "$HOME\.claude\skills" | Out-Null
+Copy-Item -Recurse -Force plugin\skills\ux-animation-principles "$HOME\.claude\skills\"
+```
+
+For one project only, copy it into that project's `.claude/skills/` and commit it.
+
+### Claude apps (web, desktop)
+
+Run `npm run package` to build `dist/ux-animation-principles.zip` (the `dist/` folder is not
+committed). The archive contains the folder `ux-animation-principles/` at its top level,
+with `SKILL.md` inside it. This is the structure the apps expect.
 
 1. Make sure code execution / file creation is turned on. Free, Pro and Max: Settings →
    Capabilities. Team and Enterprise: an owner enables Skills under Organization settings.
 2. Go to **Customize → Skills**.
 3. Click **+**, then **Create skill → Upload a skill**.
 4. Choose `ux-animation-principles.zip`.
-5. Make sure the skill is toggled on.
+5. Make sure the skill is toggled on. Uploads don't update in place: re-upload after changes.
 
 Claude then uses the skill automatically when a request matches its description. You can
 also ask for it by name ("use the ux-animation-principles skill to review this screen").
 
-**Claude Code:** copy the folder (not the ZIP).
+Install it in Claude Code and in the Claude apps separately: don't count on one syncing to
+the other.
 
-```bash
-# personal: available in all your projects on this machine
-mkdir -p ~/.claude/skills && cp -R skill/ux-animation-principles ~/.claude/skills/
-# or project-only: commit it so your team gets it too
-mkdir -p .claude/skills && cp -R skill/ux-animation-principles .claude/skills/
-```
+### Check the packaging
 
-Skills you enable in your Claude account also load in Claude Code when you sign in with
-the same account.
-
-**Rebuild the ZIP after editing the skill:** run `npm run package`. It works on Windows, macOS and Linux.
+`npm run check` verifies the marketplace and plugin manifests along with the 20/20
+coverage. For the official check, run `claude plugin validate .` (marketplace) and
+`claude plugin validate ./plugin` (plugin). It reports a missing licence and icon, which
+only matter if you submit to Anthropic's public plugin directory.
 
 ## 2. Run the gallery
 

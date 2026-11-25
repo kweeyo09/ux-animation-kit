@@ -16,7 +16,7 @@ const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
 const GALLERY = path.join(ROOT, 'gallery');
-const SKILL = path.join(ROOT, 'skill', 'ux-animation-principles');
+const SKILL = path.join(ROOT, 'plugin', 'skills', 'ux-animation-principles');
 
 const EXPECTED = [
   'Squash & stretch', 'Anticipation wind-up', 'Staging the focus', 'Pose to pose', 'Follow through',
@@ -117,6 +117,26 @@ sections.forEach(sec => {
   check(missing.length === 0, `recipe "${name}" applies all 20 principles${missing.length ? ' (missing ' + missing.join(', ') + ')' : ''}`);
 });
 check(skillMd.includes('## Apply any principle to any element') && skillMd.includes('references/element-recipes.md'), 'SKILL.md teaches applying any principle to any element');
+
+/* ---------- Claude Code plugin marketplace ---------- */
+const readJson = f => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return null; } };
+const market = readJson(path.join(ROOT, '.claude-plugin', 'marketplace.json'));
+check(!!market, '.claude-plugin/marketplace.json exists and is valid JSON');
+if (market) {
+  check(/^[a-z0-9-]+$/.test(market.name || ''), `marketplace name is kebab-case (${market.name})`);
+  check(!!(market.owner && market.owner.name), 'marketplace has an owner name');
+  const entry = (market.plugins || []).find(p => p.name === 'ux-animation-principles');
+  check(!!entry, 'marketplace lists the ux-animation-principles plugin');
+  if (entry) {
+    const pluginRoot = path.join(ROOT, entry.source || '');
+    const manifest = readJson(path.join(pluginRoot, '.claude-plugin', 'plugin.json'));
+    check(!!manifest, `plugin.json found at ${entry.source}/.claude-plugin/plugin.json`);
+    check(!!manifest && manifest.name === entry.name, 'plugin.json name matches the marketplace entry');
+    check(!!manifest && manifest.version === entry.version, 'plugin.json version matches the marketplace entry');
+    check(path.resolve(pluginRoot, 'skills', 'ux-animation-principles') === SKILL, 'the plugin\'s skills/ folder holds this Skill (single source of truth)');
+    check(fs.readdirSync(path.join(pluginRoot, '.claude-plugin')).join() === 'plugin.json', '.claude-plugin/ in the plugin holds only plugin.json');
+  }
+}
 
 /* ---------- report ---------- */
 console.log('\nUX & Animation kit: coverage check\n');

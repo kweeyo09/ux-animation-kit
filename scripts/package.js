@@ -10,7 +10,7 @@ const path = require('path');
 const zlib = require('zlib');
 
 const ROOT = path.resolve(__dirname, '..');
-const SKILL_PARENT = path.join(ROOT, 'skill');
+const SKILL_PARENT = path.join(ROOT, 'plugin', 'skills');
 const SKILL_NAME = 'ux-animation-principles';
 const OUT = path.join(ROOT, 'dist', SKILL_NAME + '.zip');
 

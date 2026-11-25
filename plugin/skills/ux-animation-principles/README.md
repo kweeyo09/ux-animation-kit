@@ -16,8 +16,8 @@ motion and layout decisions → implement → verify.
 - **Claude apps:** Customize → Skills → **+** → Create skill → **Upload a skill**. Upload a
   ZIP whose top-level entry is this folder (`ux-animation-principles/SKILL.md`). Code
   execution / file creation must be on (Settings → Capabilities).
-- **Claude Code:** copy this folder to `~/.claude/skills/` (personal) or `.claude/skills/`
-  (project).
+- **Claude Code:** `/plugin install ux-animation-principles --marketplace kweeyo09/ux-animation-kit`,
+  or copy this folder to `~/.claude/skills/` (personal) or `.claude/skills/` (project).
 
 Note: the label of principle 20, "Frequency of use", is unverified. See its section in
 `references/principles.md`.
